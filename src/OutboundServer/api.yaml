@@ -855,7 +855,15 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/transferResponse'
+            type: string
+            pattern: '^([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$'
+      headers:
+        traceparent:
+          $ref: '#/components/parameters/traceparent'
+        tracestate:
+          schema:
+            type: string
+            pattern: '^([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$'
     transferBadRequest:
       description: Malformed or missing required body, headers or parameters
       content:
@@ -903,3 +911,23 @@ components:
         pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
         type: string
       description: Identifier of the transfer to continue as returned in the response to a `POST /transfers` request.
+    traceparent:
+      name: traceparent
+      in: header
+      required: false
+      description: >-
+        Dash delimited string of tracing information: \-\-\-\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
+      schema:
+        type: string
+        pattern: '^([0-9a-f]{2})-([0-9a-f]{32})-([0-9a-f]{16})-([0-9a-f]{2})$'
+    tracestate:
+      name: tracestate
+      in: header
+      required: false
+      description: >-
+        Comma delimited vendor specific format captured as follows: \=\.
+        Refer to the following publication for more information: https://w3c.github.io/trace-context/
+      schema:
+        type: string
+        pattern: '([^\n=,]+=[^\n=,]+,)*([^\n=,]+=[^\n=,]+)'

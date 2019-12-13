@@ -11,6 +11,7 @@
 'use strict';
 
 const EventSdk = require('@mojaloop/event-sdk');
+const Util = require('@mojaloop/central-services-shared').Util;
 
 /**
  * Creates a span and adds it to the request headers
@@ -52,7 +53,16 @@ const finishTrace = () => async (ctx) => {
             span.error(response, state);
             span.finish(response.message, state);
         } else {
-            span.finish();
+            try {
+                let request = span.injectContextToHttpRequest( { headers: ctx.request.response.headers } );
+                ctx.set({
+                    traceparent: request.headers.traceparent,
+                    tracestate: request.headers.tracestate
+                });
+                span.finish();
+            } catch (e) {
+                throw e;
+            }
         }
     }
 };
